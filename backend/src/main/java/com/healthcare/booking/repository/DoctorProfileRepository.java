@@ -2,7 +2,9 @@ package com.healthcare.booking.repository;
 
 import com.healthcare.booking.entity.ApprovalStatus;
 import com.healthcare.booking.entity.DoctorProfile;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -53,4 +55,16 @@ public interface DoctorProfileRepository extends JpaRepository<DoctorProfile, Lo
             """)
     Optional<DoctorProfile> findActiveById(@Param("id") Long id,
                                            @Param("status") ApprovalStatus status);
+
+    /** The doctor profile that belongs to a login account (users.id). */
+    Optional<DoctorProfile> findByUserId(Long userId);
+
+    /**
+     * Same, but locks the doctor's row until the transaction ends. Slot create/update/delete
+     * use this so two requests from the same doctor are processed one after another, which
+     * makes the "no overlapping slots" check safe even under simultaneous requests.
+     */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select d from DoctorProfile d where d.user.id = :userId")
+    Optional<DoctorProfile> findByUserIdForUpdate(@Param("userId") Long userId);
 }

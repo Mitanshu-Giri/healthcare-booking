@@ -55,8 +55,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/specializations").permitAll()
-                        // Doctors listing + profile are public pages. Only these two exact GET patterns are open.
-                        .requestMatchers(HttpMethod.GET, "/api/doctors", "/api/doctors/{id}").permitAll()
+                        // Doctors listing, profile and available slots are public pages. Only these exact GET patterns are open.
+                        .requestMatchers(HttpMethod.GET, "/api/doctors", "/api/doctors/{id}", "/api/doctors/{id}/slots").permitAll()
+                        // Doctor-only area (note: /api/doctor, singular, is different from the public /api/doctors)
+                        .requestMatchers("/api/doctor/**").hasRole("DOCTOR")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex

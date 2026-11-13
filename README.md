@@ -10,6 +10,7 @@ Full-stack project: React frontend + Spring Boot 3 backend + MySQL.
 - Role-based access (`ADMIN` area locked), CORS, central JSON error handling
 - Public specializations list (seeded)
 - Public doctors list/search/filter and doctor details (`/api/doctors`, `/api/doctors/{id}`)
+- Doctor slot management (`/api/doctor/slots`, doctor role only) and public view of a doctor's available slots
 - Demo doctors created on startup (set `SEED_DEMO_DATA=false` to disable). Demo doctor login:
   `priya.sharma@demo.healthcare.example` / `Doctor@123` (password from `DEMO_DOCTOR_PASSWORD`)
 
@@ -49,4 +50,4 @@ docs/API.md    endpoint documentation
 ```
 
 ## Not built yet
-Availability slots, appointments, admin APIs, the entire React frontend, tests.
+Appointments (booking, cancel, approve/reject), admin APIs, the entire React frontend, tests.
