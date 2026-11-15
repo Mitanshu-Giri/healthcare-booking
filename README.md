@@ -11,6 +11,7 @@ Full-stack project: React frontend + Spring Boot 3 backend + MySQL.
 - Public specializations list (seeded)
 - Public doctors list/search/filter and doctor details (`/api/doctors`, `/api/doctors/{id}`)
 - Doctor slot management (`/api/doctor/slots`, doctor role only) and public view of a doctor's available slots
+- Appointment booking: patients book/cancel/list, doctors approve/reject/complete; the slot row is locked so two patients can never book the same slot (see `docs/APPOINTMENT_TESTS.md`, `scripts/concurrency-test.mjs`)
 - Demo doctors created on startup (set `SEED_DEMO_DATA=false` to disable). Demo doctor login:
   `priya.sharma@demo.healthcare.example` / `Doctor@123` (password from `DEMO_DOCTOR_PASSWORD`)
 
@@ -49,5 +50,8 @@ backend/src/main/resources/db/migration/   V1 schema, V2 seed
 docs/API.md    endpoint documentation
 ```
 
+## Automated tests
+Importable Postman collection with ~200 negative/validation/security requests in `tests/postman/`; instructions in `docs/AUTOMATED_TESTS.md`.
+
 ## Not built yet
-Appointments (booking, cancel, approve/reject), admin APIs, the entire React frontend, tests.
+Admin APIs, the entire React frontend, JUnit tests.

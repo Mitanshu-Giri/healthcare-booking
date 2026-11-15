@@ -1,0 +1,10 @@
+$kind: collection
+name: Healthcare Booking - Negative, Validation and Security Tests (without time rules)
+description: Automated negative/validation/authorization/security tests. Import together with the "Healthcare Local" environment, select that environment, and run the whole collection in order (or run it with newman). It creates its own users and slots. See docs/AUTOMATED_TESTS.md.
+variables:
+  - key: bearer_token_18wu
+    secret: true
+    disabled: false
+  - key: basic_auth_02jx
+    secret: true
+    disabled: false

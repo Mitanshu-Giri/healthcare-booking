@@ -1,0 +1,3 @@
+$kind: collection
+description: "Doctor slot create/list/update/delete: auth, validation, overlap, ownership."
+order: 4000

@@ -1,0 +1,74 @@
+$kind: http-request
+name: AUTH-20 GET /me with alg=none unsigned token -> 401
+url: "{{baseUrl}}/api/auth/me"
+method: GET
+headers:
+  Authorization: Bearer {{algNoneToken}}
+scripts:
+  - type: beforeRequest
+    code: |-
+      function env(k) { return pm.environment.get(k); }
+      function put(k, v) { pm.environment.set(k, String(v)); }
+
+      var B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+      function b64decode(s) {
+        s = s.replace(/-/g, '+').replace(/_/g, '/'); var out = '', bits = 0, acc = 0;
+        for (var i = 0; i < s.length; i++) {
+          var v = B64.indexOf(s.charAt(i)); if (v < 0) { continue; }
+          acc = (acc << 6) | v; bits += 6;
+          if (bits >= 8) { bits -= 8; out += String.fromCharCode((acc >> bits) & 255); acc = acc & ((1 << bits) - 1); }
+        }
+        return out;
+      }
+      function b64urlEncode(str) {
+        var out = '', bits = 0, acc = 0;
+        for (var i = 0; i < str.length; i++) {
+          acc = (acc << 8) | (str.charCodeAt(i) & 255); bits += 8;
+          while (bits >= 6) { bits -= 6; out += B64.charAt((acc >> bits) & 63); acc = acc & ((1 << bits) - 1); }
+        }
+        if (bits > 0) { out += B64.charAt((acc << (6 - bits)) & 63); }
+        return out.replace(/\+/g, '-').replace(/\//g, '_');
+      }
+      function jwtParts() {
+        var t = pm.environment.get('patientAToken'); var p = String(t).split('.');
+        if (p.length !== 3) { throw new Error('patientAToken is not a JWT - did 00 Setup run?'); }
+        return p;
+      }
+      var p = jwtParts(); put('algNoneToken', b64urlEncode('{"alg":"none","typ":"JWT"}') + '.' + p[1] + '.');
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      
+      var CODE = pm.response.code;
+      var TXT = pm.response.text();
+      var J = null; try { J = JSON.parse(TXT); } catch (e) { J = null; }
+      function check(name, cond, detail) {
+        pm.test(name, function () { if (!cond) { throw new Error(detail || ('assertion failed: ' + name)); } });
+      }
+      function snip() { return String(TXT).replace(/\s+/g, ' ').slice(0, 240); }
+      function status(n) { check('HTTP status is ' + n, CODE === n, 'expected HTTP ' + n + ' but got ' + CODE + ' | body: ' + snip()); }
+      function err(n, part) {
+        status(n);
+        check('error JSON: status=' + n + (part ? ', message contains "' + part + '"' : ''),
+          J !== null && J.status === n && typeof J.message === 'string' && typeof J.error === 'string' &&
+          (!part || J.message.toLowerCase().indexOf(part.toLowerCase()) !== -1),
+          'actual body: ' + snip());
+        check('error body leaks no internals (stack trace / SQL / class names)',
+          !/Exception|\bat com\.|\.java|stackTrace|SQLSyntax|Hibernate/i.test(TXT), 'actual body: ' + snip());
+      }
+      function fieldErr(field, part) {
+        check('fieldErrors.' + field + (part ? ' contains "' + part + '"' : ' is present'),
+          J !== null && J.fieldErrors && typeof J.fieldErrors[field] === 'string' &&
+          (!part || J.fieldErrors[field].toLowerCase().indexOf(part.toLowerCase()) !== -1),
+          'actual fieldErrors: ' + JSON.stringify(J && J.fieldErrors));
+      }
+      function env(k) { return pm.environment.get(k); }
+      function put(k, v) { pm.environment.set(k, String(v)); }
+      function num(k) { return parseInt(pm.environment.get(k), 10); }
+      function isArr(x) { return Object.prototype.toString.call(x) === '[object Array]'; }
+      function findId(list, id) { if (!isArr(list)) { return null; } for (var i = 0; i < list.length; i++) { if (String(list[i].id) === String(id)) { return list[i]; } } return null; }
+      function hdr(name) { return pm.response.headers.get(name); }
+
+      err(401, 'Authentication required');
+    language: text/javascript
+order: 20000

@@ -1,0 +1,3 @@
+$kind: collection
+description: Logs in the demo doctors, registers two NEW patients, and creates test slots 30-85 days ahead at night hours. Must run first, in order.
+order: 1000

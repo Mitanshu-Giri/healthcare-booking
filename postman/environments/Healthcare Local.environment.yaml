@@ -1,0 +1,150 @@
+name: Healthcare Local
+values:
+  - key: baseUrl
+    value: 'http://localhost:8080'
+  - key: doctorPassword
+    value: Doctor@123
+  - key: doctor1Email
+    value: priya.sharma@demo.healthcare.example
+  - key: doctor1Name
+    value: Dr. Priya Sharma
+  - key: doctor2Email
+    value: rahul.mehta@demo.healthcare.example
+  - key: doctor2Name
+    value: Dr. Rahul Mehta
+  - key: doctor3Email
+    value: ananya.iyer@demo.healthcare.example
+  - key: doctor3Name
+    value: Dr. Ananya Iyer
+  - key: inactiveDoctorEmail
+    value: inactive.example@demo.healthcare.example
+  - key: allowedOrigin
+    value: 'http://localhost:5173'
+  - key: serverUtcOffsetMinutes
+    value: '330'
+  - key: timeLeadMinutes
+    value: '3'
+  - key: runId
+    value: ''
+  - key: patientAEmail
+    value: ''
+  - key: patientAToken
+    value: ''
+  - key: patientAUserId
+    value: ''
+  - key: patientBEmail
+    value: ''
+  - key: patientBToken
+    value: ''
+  - key: patientBUserId
+    value: ''
+  - key: doctor1Token
+    value: ''
+  - key: doctor2Token
+    value: ''
+  - key: doctor3Token
+    value: ''
+  - key: inactiveDoctorToken
+    value: ''
+  - key: doctor1Id
+    value: ''
+  - key: doctor2Id
+    value: ''
+  - key: doctor3Id
+    value: ''
+  - key: testDate
+    value: ''
+  - key: testDate2
+    value: ''
+  - key: pastDate
+    value: ''
+  - key: farDate
+    value: ''
+  - key: t0
+    value: ''
+  - key: t1
+    value: ''
+  - key: t2
+    value: ''
+  - key: t3
+    value: ''
+  - key: t4
+    value: ''
+  - key: t5
+    value: ''
+  - key: t6
+    value: ''
+  - key: slotM1Id
+    value: ''
+  - key: slotM2Id
+    value: ''
+  - key: slotM3Id
+    value: ''
+  - key: slotM4Id
+    value: ''
+  - key: slotFreeId
+    value: ''
+  - key: slotAdjId
+    value: ''
+  - key: slotD2Id
+    value: ''
+  - key: apptAId
+    value: ''
+  - key: apptBId
+    value: ''
+  - key: apptB2Id
+    value: ''
+  - key: apptBoundaryId
+    value: ''
+  - key: apptXssId
+    value: ''
+  - key: timeStartMs
+    value: ''
+  - key: timeSlotDate
+    value: ''
+  - key: slotTimeCId
+    value: ''
+  - key: slotTimePId
+    value: ''
+  - key: slotTimeOId
+    value: ''
+  - key: apptTimeCId
+    value: ''
+  - key: apptTimePId
+    value: ''
+  - key: raceSlotId
+    value: ''
+  - key: raceCommand
+    value: ''
+  - key: tIn0
+    value: ''
+  - key: tIn1
+    value: ''
+  - key: tq0
+    value: ''
+  - key: tq1
+    value: ''
+  - key: patientAEmailUpper
+    value: ''
+  - key: massEmail
+    value: ''
+  - key: tamperedSigToken
+    value: ''
+  - key: tamperedRoleToken
+    value: ''
+  - key: tamperedSubToken
+    value: ''
+  - key: algNoneToken
+    value: ''
+  - key: lockEmail
+    value: ''
+  - key: t5plus5
+    value: ''
+  - key: reason256
+    value: ''
+  - key: reason255
+    value: ''
+  - key: longEmail
+    value: ''
+  - key: longName
+    value: ''

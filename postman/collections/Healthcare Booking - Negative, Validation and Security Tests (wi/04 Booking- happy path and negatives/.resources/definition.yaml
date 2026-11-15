@@ -1,0 +1,4 @@
+$kind: collection
+name: "04 Booking: happy path and negatives"
+description: Patient A books M1, then duplicate/invalid/validation/role cases.
+order: 5000

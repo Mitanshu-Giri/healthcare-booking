@@ -49,6 +49,10 @@ public class AvailabilitySlot {
         this.endTime = endTime;
     }
 
+    public void markBooked() { this.status = SlotStatus.BOOKED; }
+
+    public void markAvailable() { this.status = SlotStatus.AVAILABLE; }
+
     public Long getId() { return id; }
     public DoctorProfile getDoctor() { return doctor; }
     public LocalDate getSlotDate() { return slotDate; }

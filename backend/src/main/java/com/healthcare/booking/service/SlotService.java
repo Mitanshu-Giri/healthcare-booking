@@ -7,6 +7,7 @@ import com.healthcare.booking.entity.AvailabilitySlot;
 import com.healthcare.booking.entity.DoctorProfile;
 import com.healthcare.booking.entity.SlotStatus;
 import com.healthcare.booking.exception.ApiException;
+import com.healthcare.booking.repository.AppointmentRepository;
 import com.healthcare.booking.repository.AvailabilitySlotRepository;
 import com.healthcare.booking.repository.DoctorProfileRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,13 +34,16 @@ public class SlotService {
 
     private final AvailabilitySlotRepository slotRepository;
     private final DoctorProfileRepository doctorRepository;
+    private final AppointmentRepository appointmentRepository;
     private final ZoneId zone;
 
     public SlotService(AvailabilitySlotRepository slotRepository,
                        DoctorProfileRepository doctorRepository,
+                       AppointmentRepository appointmentRepository,
                        @Value("${app.timezone:Asia/Kolkata}") String timezone) {
         this.slotRepository = slotRepository;
         this.doctorRepository = doctorRepository;
+        this.appointmentRepository = appointmentRepository;
         this.zone = ZoneId.of(timezone);
     }
 
@@ -82,6 +86,7 @@ public class SlotService {
         DoctorProfile doctor = lockApprovedDoctor(userId);
         AvailabilitySlot slot = findOwnedSlot(doctor, slotId);
         requireAvailable(slot, "changed");
+        requireNoAppointmentHistory(slot, "changed");
 
         LocalDate day = request.slotDate();
         LocalTime start = minutes(request.startTime());
@@ -98,6 +103,7 @@ public class SlotService {
         DoctorProfile doctor = lockApprovedDoctor(userId);
         AvailabilitySlot slot = findOwnedSlot(doctor, slotId);
         requireAvailable(slot, "deleted");
+        requireNoAppointmentHistory(slot, "deleted");
         slotRepository.delete(slot);
     }
 
@@ -153,6 +159,18 @@ public class SlotService {
     private void requireAvailable(AvailabilitySlot slot, String action) {
         if (slot.getStatus() != SlotStatus.AVAILABLE) {
             throw new ApiException(HttpStatus.CONFLICT, "A booked slot cannot be " + action);
+        }
+    }
+
+    /**
+     * A slot that was ever booked (even if the appointment was later cancelled or rejected) keeps its
+     * time, because patients' appointment history points at it. Deleting it would also delete that
+     * history (the foreign key is ON DELETE CASCADE), and editing it would change the time shown in it.
+     */
+    private void requireNoAppointmentHistory(AvailabilitySlot slot, String action) {
+        if (appointmentRepository.existsBySlotId(slot.getId())) {
+            throw new ApiException(HttpStatus.CONFLICT,
+                    "This slot has appointment history and cannot be " + action);
         }
     }
 

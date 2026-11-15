@@ -1,0 +1,3 @@
+$kind: collection
+description: Slots that are booked or ever had an appointment cannot be edited/deleted; history must survive.
+order: 9000

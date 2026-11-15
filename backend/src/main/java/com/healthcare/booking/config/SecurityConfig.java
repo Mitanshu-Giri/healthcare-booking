@@ -59,6 +59,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/doctors", "/api/doctors/{id}", "/api/doctors/{id}/slots").permitAll()
                         // Doctor-only area (note: /api/doctor, singular, is different from the public /api/doctors)
                         .requestMatchers("/api/doctor/**").hasRole("DOCTOR")
+                        // Patient-only area: booking, my appointments, cancel
+                        .requestMatchers("/api/appointments/**").hasRole("PATIENT")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex

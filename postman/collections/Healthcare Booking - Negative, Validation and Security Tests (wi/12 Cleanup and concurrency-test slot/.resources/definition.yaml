@@ -1,0 +1,3 @@
+$kind: collection
+description: Deletes the leftover slots that have no history and creates one fresh slot for scripts/concurrency-test.mjs.
+order: 12000

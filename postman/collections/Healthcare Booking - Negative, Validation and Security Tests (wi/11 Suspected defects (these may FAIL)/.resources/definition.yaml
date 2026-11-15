@@ -1,0 +1,3 @@
+$kind: collection
+description: Cases where the code reading says the backend probably misbehaves. A FAIL here is a finding, not a broken collection. The backend was NOT changed.
+order: 11000

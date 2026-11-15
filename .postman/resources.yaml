@@ -1,0 +1,14 @@
+# Use this workspace to collaborate
+workspace:
+  id: c4298f0f-fe23-42a0-8b48-b6dea30e2a2b
+
+localResources:
+  collections:
+    - ../tests/postman/Healthcare-Booking-Negative-Tests-NoTime.postman_collection.json
+    - ../tests/postman/Healthcare-Booking-Negative-Tests.postman_collection.json
+  environments:
+    - ../tests/postman/Healthcare-Local.postman_environment.json
+
+cloudResources:
+  collections:
+    ../postman/collections/Healthcare Booking - Negative, Validation and Security Tests (wi: 8d53481e-5c07-42f1-b4a3-e38b444bec66

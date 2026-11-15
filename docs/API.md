@@ -94,6 +94,8 @@ Slot rules (create and update):
 - must start in the future and at most 90 days ahead
 - must not overlap another slot of the same doctor on that date (back-to-back is fine: 10:00-10:30 then 10:30-11:00)
 - a BOOKED slot cannot be updated or deleted
+- a slot that has ever had an appointment (even a cancelled or rejected one) cannot be updated or deleted,
+  because patients' appointment history points at it (409 `This slot has appointment history and cannot be ...`)
 
 ### POST /api/doctor/slots
 Request: `{ "slotDate": "2026-11-20", "startTime": "10:00", "endTime": "10:30" }`
@@ -115,8 +117,46 @@ Errors: 400, 404 (not found or belongs to another doctor), 409 overlap or slot i
 ### Other error behaviour
 Unknown URL -> 404 JSON, wrong HTTP method -> 405 JSON, database constraint conflict -> 409 JSON.
 
+## Appointments
+
+Statuses: `PENDING`, `CONFIRMED`, `REJECTED`, `CANCELLED`, `COMPLETED`.
+Allowed moves: PENDING -> CONFIRMED (doctor approves) | REJECTED (doctor rejects, slot freed) | CANCELLED (patient cancels, slot freed);
+CONFIRMED -> CANCELLED (patient, before the start time, slot freed) | COMPLETED (doctor, after the start time).
+REJECTED, CANCELLED and COMPLETED are final. Approving needs the slot to start in the future.
+Any other move returns 409 with the current status in the message.
+Booking marks the slot BOOKED; cancel/reject mark it AVAILABLE again. The patient/doctor always comes from the token.
+Someone else's appointment id behaves like a non-existent one (404). Date `yyyy-MM-dd`, time `HH:mm`.
+
+### Patient endpoints (role PATIENT; 401 without token, 403 for other roles)
+
+**POST /api/appointments**
+Request: `{ "slotId": 5, "reason": "Fever since 2 days" }` (`reason` optional, max 255 chars)
+201 Created: `{ "id", "status": "PENDING", "reason", "slotId", "slotDate", "startTime", "endTime", "doctorId", "doctorName", "clinicAddress", "createdAt" }`
+Errors: 400 validation, 404 slot not found (or its doctor is not active), 409 already booked / slot already started.
+
+**GET /api/appointments/mine** (optional `?status=PENDING`, capital letters)
+200: array of the caller's appointments, newest slot first (upcoming and history together). Errors: 400 bad status.
+
+**POST /api/appointments/{id}/cancel**
+200: the appointment with `status: "CANCELLED"`. Errors: 404 not found/not yours, 409 not PENDING/CONFIRMED or slot already started.
+
+### Doctor endpoints (role DOCTOR, under `/api/doctor/appointments`; 401 / 403 as above)
+
+**GET /api/doctor/appointments** (optional `?status=...`)
+200: array, earliest slot first, only appointments on this doctor's own slots:
+`{ "id", "status", "reason", "slotId", "slotDate", "startTime", "endTime", "patientId", "patientName", "patientPhone", "createdAt" }`
+
+**POST /api/doctor/appointments/{id}/approve** PENDING -> CONFIRMED. Errors: 404 not found/not yours, 409 not PENDING or slot already passed, 403 doctor not approved.
+**POST /api/doctor/appointments/{id}/reject** PENDING -> REJECTED and the slot becomes AVAILABLE. Errors: 404, 409, 403.
+**POST /api/doctor/appointments/{id}/complete** CONFIRMED -> COMPLETED (slot stays BOOKED), only after the start time. Errors: 404, 409, 403.
+All three return the updated appointment in the doctor shape above.
+
+### How double booking is prevented
+1. Booking runs in one transaction that first locks the slot row (`SELECT ... FOR UPDATE`), checks it is AVAILABLE, marks it BOOKED and inserts the appointment. A second request for the same slot waits for the lock, then sees BOOKED and gets 409.
+2. Cancel / approve / reject / complete lock the slot row first and the appointment row second (same order everywhere, so no deadlocks).
+3. Migration V3 adds a unique index on a generated column so the database itself rejects a second active (PENDING/CONFIRMED/COMPLETED) appointment for one slot.
+
 ## Planned (not implemented yet)
 
-APPOINTMENTS (book, cancel, approve/reject, complete), ADMIN endpoints. Contract will be added here before each is coded.
-Booking must lock the slot row (`SELECT ... FOR UPDATE`) and re-check `status = AVAILABLE` inside one transaction.
+ADMIN endpoints.
 Note: any `/api/admin/**` URL is already restricted to the ADMIN role in `SecurityConfig`.

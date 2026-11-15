@@ -1,0 +1,3 @@
+$kind: collection
+description: Register/login negatives, mass assignment, forged/tampered tokens, brute-force lock (uses a throwaway account).
+order: 2000

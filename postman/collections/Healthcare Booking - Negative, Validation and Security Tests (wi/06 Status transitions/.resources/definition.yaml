@@ -1,0 +1,3 @@
+$kind: collection
+description: Every allowed move and every forbidden move. Appointment A on M1; Appointment B on M2; Patient B rebooks M1.
+order: 7000

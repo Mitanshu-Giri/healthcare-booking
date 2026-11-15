@@ -1,0 +1,47 @@
+$kind: http-request
+name: BOOK-04 Patient B books the same slot -> 409
+url: "{{baseUrl}}/api/appointments"
+method: POST
+headers:
+  Authorization: Bearer {{patientBToken}}
+  Content-Type: application/json
+body:
+  type: json
+  content: '{"slotId":{{slotM1Id}}}'
+scripts:
+  - type: afterResponse
+    code: |-
+      
+      var CODE = pm.response.code;
+      var TXT = pm.response.text();
+      var J = null; try { J = JSON.parse(TXT); } catch (e) { J = null; }
+      function check(name, cond, detail) {
+        pm.test(name, function () { if (!cond) { throw new Error(detail || ('assertion failed: ' + name)); } });
+      }
+      function snip() { return String(TXT).replace(/\s+/g, ' ').slice(0, 240); }
+      function status(n) { check('HTTP status is ' + n, CODE === n, 'expected HTTP ' + n + ' but got ' + CODE + ' | body: ' + snip()); }
+      function err(n, part) {
+        status(n);
+        check('error JSON: status=' + n + (part ? ', message contains "' + part + '"' : ''),
+          J !== null && J.status === n && typeof J.message === 'string' && typeof J.error === 'string' &&
+          (!part || J.message.toLowerCase().indexOf(part.toLowerCase()) !== -1),
+          'actual body: ' + snip());
+        check('error body leaks no internals (stack trace / SQL / class names)',
+          !/Exception|\bat com\.|\.java|stackTrace|SQLSyntax|Hibernate/i.test(TXT), 'actual body: ' + snip());
+      }
+      function fieldErr(field, part) {
+        check('fieldErrors.' + field + (part ? ' contains "' + part + '"' : ' is present'),
+          J !== null && J.fieldErrors && typeof J.fieldErrors[field] === 'string' &&
+          (!part || J.fieldErrors[field].toLowerCase().indexOf(part.toLowerCase()) !== -1),
+          'actual fieldErrors: ' + JSON.stringify(J && J.fieldErrors));
+      }
+      function env(k) { return pm.environment.get(k); }
+      function put(k, v) { pm.environment.set(k, String(v)); }
+      function num(k) { return parseInt(pm.environment.get(k), 10); }
+      function isArr(x) { return Object.prototype.toString.call(x) === '[object Array]'; }
+      function findId(list, id) { if (!isArr(list)) { return null; } for (var i = 0; i < list.length; i++) { if (String(list[i].id) === String(id)) { return list[i]; } } return null; }
+      function hdr(name) { return pm.response.headers.get(name); }
+
+      err(409, 'already been booked');
+    language: text/javascript
+order: 4000

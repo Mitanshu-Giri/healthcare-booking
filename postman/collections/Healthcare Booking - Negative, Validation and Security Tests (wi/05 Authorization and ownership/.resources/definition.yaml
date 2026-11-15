@@ -1,0 +1,3 @@
+$kind: collection
+description: Appointment A (PENDING, Patient A / Doctor 1) is attacked by the wrong patient, wrong doctor, wrong roles.
+order: 6000

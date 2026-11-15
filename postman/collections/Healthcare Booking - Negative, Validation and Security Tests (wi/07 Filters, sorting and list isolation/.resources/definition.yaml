@@ -1,0 +1,3 @@
+$kind: collection
+description: Uses the appointments created above. Assertions only look at THIS run's ids, so existing data does not disturb them.
+order: 8000

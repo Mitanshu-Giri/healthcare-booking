@@ -59,6 +59,15 @@ public interface AvailabilitySlotRepository extends JpaRepository<AvailabilitySl
                                                  @Param("lastDay") LocalDate lastDay);
 
     /**
+     * Loads a slot by id and locks the row (SELECT ... FOR UPDATE) until the transaction ends.
+     * Booking, cancelling, approving and rejecting all go through this, so for one slot they
+     * run strictly one after another. A locking read always sees the latest committed data.
+     */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select s from AvailabilitySlot s where s.id = :slotId")
+    Optional<AvailabilitySlot> findByIdForUpdate(@Param("slotId") Long slotId);
+
+    /**
      * Loads a slot only if it belongs to the given doctor, and locks the row until the
      * transaction ends (SELECT ... FOR UPDATE). The booking code will lock the same row,
      * so a doctor cannot edit/delete a slot at the exact moment a patient books it.
