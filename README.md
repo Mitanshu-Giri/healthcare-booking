@@ -1,7 +1,7 @@
 # Healthcare Appointment Booking System
 
 Full-stack project: React frontend + Spring Boot 3 backend + MySQL.
-**Status:** backend foundation + authentication written; frontend not started. See `PROJECT_STATUS.md`.
+**Status:** backend complete and tested; frontend started (login/register). See `PROJECT_STATUS.md`.
 
 ## What exists today
 - MySQL schema (8 tables) managed by Flyway
@@ -50,8 +50,11 @@ backend/src/main/resources/db/migration/   V1 schema, V2 seed
 docs/API.md    endpoint documentation
 ```
 
+## Frontend
+React + Vite + Tailwind app in `frontend/`: patient module (dashboard, doctors, booking, my appointments, profile), doctor module (dashboard, slots, appointment requests), admin placeholder page. Run: `cd frontend && npm install && npm run dev`. Details: `frontend/README.md`, tests: `docs/FRONTEND_TESTING.md`.
+
 ## Automated tests
 Importable Postman collection with ~200 negative/validation/security requests in `tests/postman/`; instructions in `docs/AUTOMATED_TESTS.md`.
 
 ## Not built yet
-Admin APIs, the entire React frontend, JUnit tests.
+Admin APIs (and therefore the admin screens), patient profile editing API, JUnit tests.

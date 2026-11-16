@@ -1,6 +1,16 @@
 # PROJECT_STATUS.md — Healthcare Appointment Booking System
 
-Last updated: 2026-11-15
+Last updated: 2026-11-16
+
+## 0. Frontend (written 2026-11-16, in the cloud session)
+
+Login/Register were run and confirmed by the student. The rest of the frontend (patient, doctor, admin-placeholder modules) is **written but NOT run in a browser and NOT `npm install`ed** (no npm network in the cloud). Checked only with esbuild: all 53 modules bundle, imports/exports/routes resolve; Node runs of datetime/validation/format/token utils pass.
+Stack: Vite 5 + React 18 + Tailwind 3 + React Router 6 + Axios + lucide-react (JS). Dev port fixed at 5173 (backend CORS). Env: `VITE_API_BASE_URL`.
+Structure and routes: `frontend/README.md`. Manual test order: `docs/FRONTEND_TESTING.md`.
+Implemented: role-based routing (`RoleRoute`, `RoleHome`, Access denied page); patient dashboard, doctors list (search/speciality/sort), doctor detail with date-wise slots + booking modal (reason max 255), My appointments (status filter + cancel with confirm), read-only profile (`GET /api/auth/me` only); doctor dashboard, slots page (range filter, create/edit/delete with history lock derived from `/api/doctor/appointments`), appointments page (status filter, approve, reject, complete with confirms); toasts, error/empty/loading states; 401 -> logout + "session expired".
+**Blocked by backend (not built, not faked):** admin dashboard / manage doctors & patients / statistics (no `/api/admin/**` controllers exist; `/admin` shows an honest placeholder); patient profile edit and phone display (`UserDto` has no phone, no update endpoint); doctor own-profile page (no endpoint).
+Known caveats: "today"/"started" checks in the UI use the browser clock while the backend uses `app.timezone` (Asia/Kolkata); the backend is the final judge and its messages are shown. Doctor approve/complete are not pre-disabled by time for the same reason. lucide icon names unverified until `npm install` (a missing icon shows up as a build error).
+Next: student runs `docs/FRONTEND_TESTING.md`, reports failures; then fix. Possible later work: admin APIs + screens, profile API, deployment, README screenshots.
 
 ## 1. Current state (read this first)
 
@@ -88,7 +98,7 @@ Student's machine: see Section 1 for confirmed items. Appointment results: pendi
 ## 9. Exact next steps
 
 1. Student imports `tests/postman/*` and runs it (`docs/AUTOMATED_TESTS.md`), runs the concurrency script, fills `docs/TEST_REPORT_TEMPLATE.md`, reports failures; fix real defects (decide on DEF-01).
-2. React frontend (Vite + Tailwind): login/register, doctors list/search, doctor page with slot buttons + book, My Appointments (cancel), doctor dashboard (slots + requests approve/reject). Use Axios with the Bearer token; show toasts and loading states.
+2. (Login/register done, see section 0.) React frontend (Vite + Tailwind):  doctors list/search, doctor page with slot buttons + book, My Appointments (cancel), doctor dashboard (slots + requests approve/reject). Use Axios with the Bearer token; show toasts and loading states.
 3. If time: one real JUnit/Spring test for double booking; README screenshots; deployment.
 
 ## 10. Resume rules
