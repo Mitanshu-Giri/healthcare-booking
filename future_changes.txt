@@ -1,0 +1,8 @@
+Admin API prepare.
+{
+problem 1:  slot locked problem. 
+solution:   ya to unlocked rahe ya unavailable
+problem 2 : account delete no available
+problem 3:  patient profile editing Api integrate krwani hai
+problem 4:  doctor profile bhi editing APi integrate krwani hai
+}
